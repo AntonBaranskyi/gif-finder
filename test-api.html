@@ -32,6 +32,12 @@
     </div>
     
     <div class="test-section">
+        <h2>Trending Function</h2>
+        <button onclick="testTrending()">Test Trending</button>
+        <div id="trending-result"></div>
+    </div>
+    
+    <div class="test-section">
         <h2>Giphy API (via search function)</h2>
         <button onclick="testGiphy()">Test Giphy Search</button>
         <div id="giphy-result"></div>
@@ -62,6 +68,7 @@
         function getResultId(url) {
             if (url.includes('test')) return 'test-result';
             if (url.includes('search')) return 'search-result';
+            if (url.includes('trending')) return 'trending-result';
             if (url.includes('giphy')) return 'general-giphy-result';
             return 'test-result';
         }
@@ -78,6 +85,20 @@
             } catch (error) {
                 console.error('Search error:', error);
                 document.getElementById('search-result').innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+
+        async function testTrending() {
+            const url = '/.netlify/functions/trending?limit=5';
+            try {
+                console.log('Testing trending:', url);
+                const response = await fetch(url);
+                const data = await response.json();
+                console.log('Trending response:', data);
+                document.getElementById('trending-result').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                console.error('Trending error:', error);
+                document.getElementById('trending-result').innerHTML = `<p class="error">Error: ${error.message}</p>`;
             }
         }
 

@@ -1,5 +1,5 @@
 exports.handler = async function(event, context) {
-  console.log('Giphy function called:', {
+  console.log('Trending function called:', {
     method: event.httpMethod,
     path: event.path,
     queryStringParameters: event.queryStringParameters
@@ -24,10 +24,10 @@ exports.handler = async function(event, context) {
   }
 
   try {
-    const { path, ...queryParams } = event.queryStringParameters || {}
+    const { limit = '10', rating = 'g' } = event.queryStringParameters || {}
     const apiKey = process.env.VITE_GIPHY_API_KEY
     
-    console.log('Processing request:', { path, queryParams, hasApiKey: !!apiKey })
+    console.log('Processing trending request:', { limit, rating, hasApiKey: !!apiKey })
     
     if (!apiKey) {
       console.error('Giphy API key not configured')
@@ -38,42 +38,14 @@ exports.handler = async function(event, context) {
       }
     }
 
-    // If no path is provided, try to extract it from the URL path
-    let apiPath = path
-    if (!apiPath && event.path) {
-      // Extract path from URL like /api/gifs/trending -> gifs/trending
-      const pathMatch = event.path.match(/^\/api\/(.+)$/)
-      if (pathMatch) {
-        apiPath = pathMatch[1]
-      }
-    }
-
-    if (!apiPath) {
-      console.error('Path parameter is required')
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ 
-          error: 'Path parameter is required',
-          hint: 'Use /api/gifs/search or provide path parameter',
-          example: '/api/gifs/trending?limit=10'
-        })
-      }
-    }
-
     // Construct the Giphy API URL
-    const giphyUrl = `https://api.giphy.com/v1/${apiPath}`
+    const giphyUrl = 'https://api.giphy.com/v1/gifs/trending'
     const url = new URL(giphyUrl)
     
-    // Add API key and other query parameters
+    // Add parameters
     url.searchParams.set('api_key', apiKey)
-    if (queryParams) {
-      Object.entries(queryParams).forEach(([key, value]) => {
-        if (value && key !== 'path') { // Skip path parameter
-          url.searchParams.set(key, value)
-        }
-      })
-    }
+    url.searchParams.set('limit', limit)
+    url.searchParams.set('rating', rating)
 
     console.log('Making request to Giphy:', url.toString())
 
@@ -92,14 +64,14 @@ exports.handler = async function(event, context) {
       }
     }
 
-    console.log('Successfully proxied Giphy response')
+    console.log('Successfully proxied Giphy trending response')
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify(data)
     }
   } catch (error) {
-    console.error('Giphy API proxy error:', error)
+    console.error('Trending function error:', error)
     return {
       statusCode: 500,
       headers,

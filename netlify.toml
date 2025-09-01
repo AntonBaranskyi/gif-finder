@@ -6,20 +6,26 @@
   NODE_VERSION = "18"
 
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/giphy"
-  status = 200
-  headers = {Access-Control-Allow-Origin = "*", Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS", Access-Control-Allow-Headers = "Content-Type, Authorization, X-Requested-With"}
-
-[[redirects]]
   from = "/api/gifs/search"
   to = "/.netlify/functions/search"
   status = 200
   headers = {Access-Control-Allow-Origin = "*", Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS", Access-Control-Allow-Headers = "Content-Type, Authorization, X-Requested-With"}
 
 [[redirects]]
+  from = "/api/gifs/trending"
+  to = "/.netlify/functions/trending"
+  status = 200
+  headers = {Access-Control-Allow-Origin = "*", Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS", Access-Control-Allow-Headers = "Content-Type, Authorization, X-Requested-With"}
+
+[[redirects]]
   from = "/api/test"
   to = "/.netlify/functions/test"
+  status = 200
+  headers = {Access-Control-Allow-Origin = "*", Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS", Access-Control-Allow-Headers = "Content-Type, Authorization, X-Requested-With"}
+
+[[redirects]]
+  from = "/api/:path/*"
+  to = "/.netlify/functions/giphy?path=:path"
   status = 200
   headers = {Access-Control-Allow-Origin = "*", Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS", Access-Control-Allow-Headers = "Content-Type, Authorization, X-Requested-With"}
 
