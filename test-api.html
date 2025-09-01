@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test</title>
+</head>
+<body>
+    <h1>API Test Page</h1>
+    
+    <div>
+        <h2>Test API</h2>
+        <button onclick="testAPI('/api/test')">Test /api/test</button>
+        <div id="test-result"></div>
+    </div>
+    
+    <div>
+        <h2>Simple API</h2>
+        <button onclick="testAPI('/api/simple')">Test /api/simple</button>
+        <div id="simple-result"></div>
+    </div>
+    
+    <div>
+        <h2>Search API</h2>
+        <input type="text" id="search-query" placeholder="Enter search term" value="cat">
+        <button onclick="testSearch()">Test Search</button>
+        <div id="search-result"></div>
+    </div>
+    
+    <div>
+        <h2>Giphy API (via simple)</h2>
+        <button onclick="testGiphy()">Test Giphy</button>
+        <div id="giphy-result"></div>
+    </div>
+
+    <script>
+        async function testAPI(url) {
+            try {
+                console.log('Testing:', url);
+                const response = await fetch(url);
+                const data = await response.json();
+                console.log('Response:', data);
+                const resultId = url.includes('simple') ? 'simple-result' : 'test-result';
+                document.getElementById(resultId).innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                console.error('Error:', error);
+                const resultId = url.includes('simple') ? 'simple-result' : 'test-result';
+                document.getElementById(resultId).innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+
+        async function testSearch() {
+            const query = document.getElementById('search-query').value;
+            const url = `/api/search?q=${encodeURIComponent(query)}&limit=5`;
+            try {
+                console.log('Testing search:', url);
+                const response = await fetch(url);
+                const data = await response.json();
+                console.log('Search response:', data);
+                document.getElementById('search-result').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                console.error('Search error:', error);
+                document.getElementById('search-result').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+
+        async function testGiphy() {
+            const url = '/api/gifs/search?q=cat&limit=5';
+            try {
+                console.log('Testing Giphy:', url);
+                const response = await fetch(url);
+                const data = await response.json();
+                console.log('Giphy response:', data);
+                document.getElementById('giphy-result').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                console.error('Giphy error:', error);
+                document.getElementById('giphy-result').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

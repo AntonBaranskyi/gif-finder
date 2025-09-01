@@ -1,11 +1,8 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node'
-
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  console.log('Giphy API handler called:', {
+export default async function handler(req, res) {
+  console.log('Simple API handler called:', {
     method: req.method,
     url: req.url,
-    query: req.query,
-    headers: req.headers
+    query: req.query
   })
 
   // Enable CORS
@@ -22,32 +19,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { path, ...queryParams } = req.query
+    const { q = 'cat', limit = '5' } = req.query
     const apiKey = process.env.VITE_GIPHY_API_KEY
     
-    console.log('Processing request:', { path, queryParams, hasApiKey: !!apiKey })
+    console.log('Processing simple request:', { q, limit, hasApiKey: !!apiKey })
     
     if (!apiKey) {
       console.error('Giphy API key not configured')
       return res.status(500).json({ error: 'Giphy API key not configured' })
     }
 
-    if (!path || typeof path !== 'string') {
-      console.error('Path parameter is required')
-      return res.status(400).json({ error: 'Path parameter is required' })
-    }
-
     // Construct the Giphy API URL
-    const giphyUrl = `https://api.giphy.com/v1/${path}`
+    const giphyUrl = 'https://api.giphy.com/v1/gifs/search'
     const url = new URL(giphyUrl)
     
-    // Add API key and other query parameters
+    // Add parameters
     url.searchParams.set('api_key', apiKey)
-    Object.entries(queryParams).forEach(([key, value]) => {
-      if (typeof value === 'string') {
-        url.searchParams.set(key, value)
-      }
-    })
+    url.searchParams.set('q', q)
+    url.searchParams.set('limit', limit)
+    url.searchParams.set('rating', 'g')
 
     console.log('Making request to Giphy:', url.toString())
 
@@ -65,7 +55,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.log('Successfully proxied Giphy response')
     res.status(200).json(data)
   } catch (error) {
-    console.error('Giphy API proxy error:', error)
-    res.status(500).json({ error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' })
+    console.error('Simple API error:', error)
+    res.status(500).json({ error: 'Internal server error', details: error.message })
   }
 }

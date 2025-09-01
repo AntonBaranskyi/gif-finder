@@ -1,11 +1,10 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  console.log('Giphy API handler called:', {
+  console.log('Search API handler called:', {
     method: req.method,
     url: req.url,
-    query: req.query,
-    headers: req.headers
+    query: req.query
   })
 
   // Enable CORS
@@ -22,32 +21,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { path, ...queryParams } = req.query
+    const { q, offset = '0', limit = '10', rating = 'g' } = req.query
     const apiKey = process.env.VITE_GIPHY_API_KEY
     
-    console.log('Processing request:', { path, queryParams, hasApiKey: !!apiKey })
+    console.log('Processing search request:', { q, offset, limit, rating, hasApiKey: !!apiKey })
     
     if (!apiKey) {
       console.error('Giphy API key not configured')
       return res.status(500).json({ error: 'Giphy API key not configured' })
     }
 
-    if (!path || typeof path !== 'string') {
-      console.error('Path parameter is required')
-      return res.status(400).json({ error: 'Path parameter is required' })
+    if (!q || typeof q !== 'string') {
+      console.error('Query parameter "q" is required')
+      return res.status(400).json({ error: 'Query parameter "q" is required' })
     }
 
     // Construct the Giphy API URL
-    const giphyUrl = `https://api.giphy.com/v1/${path}`
+    const giphyUrl = 'https://api.giphy.com/v1/gifs/search'
     const url = new URL(giphyUrl)
     
-    // Add API key and other query parameters
+    // Add all parameters
     url.searchParams.set('api_key', apiKey)
-    Object.entries(queryParams).forEach(([key, value]) => {
-      if (typeof value === 'string') {
-        url.searchParams.set(key, value)
-      }
-    })
+    url.searchParams.set('q', q)
+    url.searchParams.set('offset', offset.toString())
+    url.searchParams.set('limit', limit.toString())
+    url.searchParams.set('rating', rating.toString())
 
     console.log('Making request to Giphy:', url.toString())
 
@@ -62,10 +60,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(response.status).json(data)
     }
 
-    console.log('Successfully proxied Giphy response')
+    console.log('Successfully proxied Giphy search response')
     res.status(200).json(data)
   } catch (error) {
-    console.error('Giphy API proxy error:', error)
+    console.error('Search API error:', error)
     res.status(500).json({ error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' })
   }
 }
