@@ -3,34 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Test</title>
+    <title>Netlify API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 15px; margin: 5px; background: #007cba; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #005a87; }
+        input { padding: 8px; margin: 5px; border: 1px solid #ddd; border-radius: 3px; }
+        pre { background: #f5f5f5; padding: 10px; border-radius: 3px; overflow-x: auto; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
 </head>
 <body>
-    <h1>API Test Page</h1>
+    <h1>Netlify Functions Test Page</h1>
     
-    <div>
-        <h2>Test API</h2>
-        <button onclick="testAPI('/api/test')">Test /api/test</button>
+    <div class="test-section">
+        <h2>Test Function</h2>
+        <button onclick="testAPI('/.netlify/functions/test')">Test Netlify Function</button>
         <div id="test-result"></div>
     </div>
     
-    <div>
-        <h2>Simple API</h2>
-        <button onclick="testAPI('/api/simple')">Test /api/simple</button>
-        <div id="simple-result"></div>
-    </div>
-    
-    <div>
-        <h2>Search API</h2>
+    <div class="test-section">
+        <h2>Search Function</h2>
         <input type="text" id="search-query" placeholder="Enter search term" value="cat">
         <button onclick="testSearch()">Test Search</button>
         <div id="search-result"></div>
     </div>
     
-    <div>
-        <h2>Giphy API (via simple)</h2>
-        <button onclick="testGiphy()">Test Giphy</button>
+    <div class="test-section">
+        <h2>Giphy API (via search function)</h2>
+        <button onclick="testGiphy()">Test Giphy Search</button>
         <div id="giphy-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>General Giphy API</h2>
+        <button onclick="testGeneralGiphy()">Test General Giphy</button>
+        <div id="general-giphy-result"></div>
     </div>
 
     <script>
@@ -40,18 +50,25 @@
                 const response = await fetch(url);
                 const data = await response.json();
                 console.log('Response:', data);
-                const resultId = url.includes('simple') ? 'simple-result' : 'test-result';
+                const resultId = getResultId(url);
                 document.getElementById(resultId).innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
             } catch (error) {
                 console.error('Error:', error);
-                const resultId = url.includes('simple') ? 'simple-result' : 'test-result';
-                document.getElementById(resultId).innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                const resultId = getResultId(url);
+                document.getElementById(resultId).innerHTML = `<p class="error">Error: ${error.message}</p>`;
             }
+        }
+
+        function getResultId(url) {
+            if (url.includes('test')) return 'test-result';
+            if (url.includes('search')) return 'search-result';
+            if (url.includes('giphy')) return 'general-giphy-result';
+            return 'test-result';
         }
 
         async function testSearch() {
             const query = document.getElementById('search-query').value;
-            const url = `/api/search?q=${encodeURIComponent(query)}&limit=5`;
+            const url = `/.netlify/functions/search?q=${encodeURIComponent(query)}&limit=5`;
             try {
                 console.log('Testing search:', url);
                 const response = await fetch(url);
@@ -60,21 +77,35 @@
                 document.getElementById('search-result').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
             } catch (error) {
                 console.error('Search error:', error);
-                document.getElementById('search-result').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                document.getElementById('search-result').innerHTML = `<p class="error">Error: ${error.message}</p>`;
             }
         }
 
         async function testGiphy() {
-            const url = '/api/gifs/search?q=cat&limit=5';
+            const url = '/.netlify/functions/search?q=cat&limit=5';
             try {
-                console.log('Testing Giphy:', url);
+                console.log('Testing Giphy search:', url);
                 const response = await fetch(url);
                 const data = await response.json();
-                console.log('Giphy response:', data);
+                console.log('Giphy search response:', data);
                 document.getElementById('giphy-result').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
             } catch (error) {
-                console.error('Giphy error:', error);
-                document.getElementById('giphy-result').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                console.error('Giphy search error:', error);
+                document.getElementById('giphy-result').innerHTML = `<p class="error">Error: ${error.message}</p>`;
+            }
+        }
+
+        async function testGeneralGiphy() {
+            const url = '/.netlify/functions/giphy?path=gifs/search&q=dog&limit=3';
+            try {
+                console.log('Testing general Giphy:', url);
+                const response = await fetch(url);
+                const data = await response.json();
+                console.log('General Giphy response:', data);
+                document.getElementById('general-giphy-result').innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                console.error('General Giphy error:', error);
+                document.getElementById('general-giphy-result').innerHTML = `<p class="error">Error: ${error.message}</p>`;
             }
         }
     </script>
