@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import styles from './GifModal.module.scss'
 import type { GiphyGif } from '../../types/giphy.types'
 import { useDownloadFromUrl } from '../../shared/hooks/use-download-from-url'

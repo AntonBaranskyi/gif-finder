@@ -1,4 +1,3 @@
-import React from 'react';
 import type { GiphyGif } from '../../types/giphy.types';
 import styles from '../gif-search/GifSearch.module.scss';
 
