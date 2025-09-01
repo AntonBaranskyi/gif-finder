@@ -1,0 +1,1 @@
+export const GIPHY_LIMIT = 10;
