@@ -1,0 +1,30 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "package.json",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "dist"
+            }
+        }
+    ],
+    "routes": [
+        {
+            "src": "/api/test",
+            "dest": "/api/test"
+        },
+        {
+            "src": "/api/(.*)",
+            "dest": "/api/giphy?path=$1"
+        }
+    ],
+    "functions": {
+        "api/giphy.ts": {
+            "maxDuration": 10
+        },
+        "api/test.ts": {
+            "maxDuration": 5
+        }
+    }
+}

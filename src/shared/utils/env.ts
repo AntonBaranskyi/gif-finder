@@ -7,7 +7,7 @@ export const env = {
   APP_TITLE: import.meta.env.VITE_APP_TITLE || 'GIF Finder',
   API_BASE_URL: import.meta.env.DEV 
     ? '/api' 
-    : (import.meta.env.VITE_API_BASE_URL || 'https://api.giphy.com/v1').replace(/\/$/, ''),
+    : '/api', // Use /api for both dev and production on Vercel
   
   // Development settings
   DEBUG_MODE: import.meta.env.VITE_DEBUG_MODE === 'true',
