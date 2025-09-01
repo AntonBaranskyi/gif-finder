@@ -5,7 +5,6 @@ exports.handler = async function(event, context) {
     queryStringParameters: event.queryStringParameters
   })
 
-  // Enable CORS
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
@@ -13,7 +12,6 @@ exports.handler = async function(event, context) {
     'Access-Control-Max-Age': '86400'
   }
 
-  // Handle preflight request
   if (event.httpMethod === 'OPTIONS') {
     console.log('Handling OPTIONS preflight request')
     return {
@@ -38,18 +36,15 @@ exports.handler = async function(event, context) {
       }
     }
 
-    // Construct the Giphy API URL
     const giphyUrl = 'https://api.giphy.com/v1/gifs/trending'
     const url = new URL(giphyUrl)
     
-    // Add parameters
     url.searchParams.set('api_key', apiKey)
     url.searchParams.set('limit', limit)
     url.searchParams.set('rating', rating)
 
     console.log('Making request to Giphy:', url.toString())
 
-    // Make request to Giphy API
     const response = await fetch(url.toString())
     const data = await response.json()
 

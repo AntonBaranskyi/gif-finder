@@ -38,10 +38,8 @@ exports.handler = async function(event, context) {
       }
     }
 
-    // If no path is provided, try to extract it from the URL path
     let apiPath = path
     if (!apiPath && event.path) {
-      // Extract path from URL like /api/gifs/trending -> gifs/trending
       const pathMatch = event.path.match(/^\/api\/(.+)$/)
       if (pathMatch) {
         apiPath = pathMatch[1]
@@ -61,15 +59,13 @@ exports.handler = async function(event, context) {
       }
     }
 
-    // Construct the Giphy API URL
     const giphyUrl = `https://api.giphy.com/v1/${apiPath}`
     const url = new URL(giphyUrl)
     
-    // Add API key and other query parameters
     url.searchParams.set('api_key', apiKey)
     if (queryParams) {
       Object.entries(queryParams).forEach(([key, value]) => {
-        if (value && key !== 'path') { // Skip path parameter
+        if (value && key !== 'path') { 
           url.searchParams.set(key, value)
         }
       })
@@ -77,7 +73,6 @@ exports.handler = async function(event, context) {
 
     console.log('Making request to Giphy:', url.toString())
 
-    // Make request to Giphy API
     const response = await fetch(url.toString())
     const data = await response.json()
 

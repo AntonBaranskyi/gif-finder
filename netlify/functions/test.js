@@ -5,7 +5,6 @@ exports.handler = async function(event, context) {
     queryStringParameters: event.queryStringParameters
   })
 
-  // Enable CORS
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
@@ -13,7 +12,6 @@ exports.handler = async function(event, context) {
     'Access-Control-Max-Age': '86400'
   }
 
-  // Handle preflight request
   if (event.httpMethod === 'OPTIONS') {
     console.log('Handling OPTIONS preflight request')
     return {
